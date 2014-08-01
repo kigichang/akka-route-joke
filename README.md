@@ -2,7 +2,9 @@
 
 延用 __吃飯睡覺打東東__ 的企鵝笑話，來 demo Akka Route 的功能。每隻企鵝會記錄被打了幾次。
 
-名叫 __東東__ 的企鵝，在被打第 __4__ 次時，會說 __不要打擾我__，在第 6 次時，會 __爆炸__，在超過第 __6__ 次後，牠就成仙了。記者在啟動後，會對企鵝群打 100 次。
+名叫 __東東__ 的企鵝，在被打第 __4__ 次時，會說 __不要打擾我__，在第 6 次時，會 __爆炸__，在超過第 __6__ 次後，牠就成仙了。
+
+記者在啟動後，會對企鵝群打 100 次。
 
 
 ## 說明
@@ -23,3 +25,30 @@ override val supervisorStrategy =
 或註解掉這一段程式，來了解 Akka Stragegy 的運作方式。
 
 Akka Stragey 預設是 `OneForOneStrategy`，在發現有 `Exception` 時，會自動重啟 Child Actor.
+
+
+修改
+
+```
+//var router = Router(SmallestMailboxRoutingLogic(), penguins.toIndexedSeq)
+var router = Router(RoundRobinRoutingLogic(), penguins.toIndexedSeq)
+```
+
+來測試不同的 Routing 方式。
+
+
+如果有子 Actor 停止時，會收到 `Terminated` 訊息。可以重新啟動新的 Actor。
+
+```
+case Terminated(child) =>
+      router = router.removeRoutee(child)
+      val actor = 
+        if (child.path.toString().indexOf("dongdong") >= 0)
+          context.actorOf(Props[DongDong], "dongdong")
+        else
+          context.actorOf(Props(classOf[Penguin]))
+
+      context watch actor
+      router = router.addRoutee(actor)
+```
+
