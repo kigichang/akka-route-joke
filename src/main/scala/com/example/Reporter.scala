@@ -87,7 +87,7 @@ class Reporter() extends Actor {
         if (child.path.toString().indexOf("dongdong") >= 0)
           context.actorOf(Props[DongDong], "dongdong")
         else
-          context.actorOf(Props(classOf[Penguin]))
+          context.actorOf(Props(classOf[Penguin], "Penguin" + (System.nanoTime())))
 
       context watch actor
       router = router.addRoutee(actor)
