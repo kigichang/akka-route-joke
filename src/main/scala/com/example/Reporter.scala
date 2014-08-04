@@ -81,7 +81,7 @@ class Reporter() extends Actor {
     case ResponseHit(name, hit) =>
       println(s"$name: I had been hit $hit times")
 
-    /*case Terminated(child) =>
+    case Terminated(child) =>
       router = router.removeRoutee(child)
       val actor = 
         if (child.path.toString().indexOf("dongdong") >= 0)
@@ -91,7 +91,6 @@ class Reporter() extends Actor {
 
       context watch actor
       router = router.addRoutee(actor)
-    */
       
     case HitDong =>
       router.route(Hit, self)
