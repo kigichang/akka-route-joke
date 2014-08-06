@@ -82,15 +82,17 @@ class Reporter() extends Actor {
       println(s"$name: I had been hit $hit times")
 
     case Terminated(child) =>
+      println(child.path.toString() + " terminated")
       router = router.removeRoutee(child)
       val actor = 
         if (child.path.toString().indexOf("dongdong") >= 0)
           context.actorOf(Props[DongDong], "dongdong")
         else
           context.actorOf(Props(classOf[Penguin], "Penguin" + (System.nanoTime())))
-
+      
       context watch actor
       router = router.addRoutee(actor)
+      println(actor.path.toString() + " add to router")
       
     case HitDong =>
       router.route(Hit, self)
